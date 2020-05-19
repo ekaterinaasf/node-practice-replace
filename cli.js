@@ -25,6 +25,40 @@
   : -list
     if a user passes in "-list" as any command line argument,
     log a list of all the file names in "./files"
-
 */
 
+const fs = require("fs");
+const sanbox = require("./logic/sandbox"); //use logic from here
+const ENTRIES_PATH = "./entries.json"; //not useful??
+const DOC_STRING = `
+COMMANDS:
+  cli.js <original_filename> <string_to_replace> <string_to_replace_with> <output_filename>
+    cli.js reads the <original_filename> and replace all <string_to_replace> with 
+    the <string_to_replace_with> and write the result into the<output_filename>
+FLAGS:
+  -list
+    print the list of available files
+  -h
+    print this helpful message
+`;
+if (process.argv.includes("-h")) {
+  console.log(DOC_STRING);
+  // this line tells Node to stop right now, done, end, finished.
+  //  it's kind of like an early return, but for a node app
+  process.exit(0);
+}
+
+if (process.argv.includes("-list")) {
+  ////////// Write it
+  // this line tells Node to stop right now, done, end, finished.
+  //  it's kind of like an early return, but for a node app
+  process.exit(0);
+}
+
+const srcFile = process.argv[2];
+const srcStr = process.argv[3];
+const dstStr = process.argv[4];
+const dstFile = process.argv[5];
+
+//helpful
+//https://github.com/ekaterinaasf/entries-manager-cli/blob/master/index.js
