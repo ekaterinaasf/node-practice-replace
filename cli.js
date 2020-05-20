@@ -28,7 +28,7 @@
 */
 
 const fs = require("fs");
-const sanbox = require("./logic/sandbox"); //use logic from here
+const sandbox = require("./logic/sandbox"); //use logic from here
 const ENTRIES_PATH = "./entries.json"; //not useful??
 const DOC_STRING = `
 COMMANDS:
