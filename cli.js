@@ -28,8 +28,15 @@
 */
 
 const fs = require("fs");
-const sandbox = require("./logic/sandbox"); //use logic from here
-const ENTRIES_PATH = "./entries.json"; //not useful??
+const path = require("path");
+const util = require("util");
+const logic = require("./logic/index.js"); //use logic from here
+
+const readFilePromise = util.promisify(fs.readFile);
+const writeFilePromise = util.promisify(fs.writeFile);
+const readdirPromise = util.promisify(fs.readdir);
+const FILES_DIR = path.join(__dirname, "files");
+
 const DOC_STRING = `
 COMMANDS:
   cli.js <original_filename> <string_to_replace> <string_to_replace_with> <output_filename>
@@ -48,10 +55,12 @@ if (process.argv.includes("-h")) {
   process.exit(0);
 }
 
+let list = fs.readdirSync(FILES_DIR);
 if (process.argv.includes("-list")) {
   ////////// Write it
   // this line tells Node to stop right now, done, end, finished.
   //  it's kind of like an early return, but for a node app
+  console.log(...list);
   process.exit(0);
 }
 
@@ -60,5 +69,14 @@ const srcStr = process.argv[3];
 const dstStr = process.argv[4];
 const dstFile = process.argv[5];
 
-//helpful
-//https://github.com/ekaterinaasf/entries-manager-cli/blob/master/index.js
+if (list.indexOf(srcFile) === -1) {
+  //If there is no such file
+  console.log(`File "${srcFile}" does not exist. Cannot read.`);
+  process.exit(0);
+} else {
+  let text = fs.readFileSync(path.join(FILES_DIR, srcFile), "utf-8");
+  fs.writeFileSync(path.join(FILES_DIR, dstFile), logic(text, srcStr, dstStr));
+  console.log(
+    `All instances of ${srcStr} were replaced with ${dstStr} and saved into the ${dstFile}.`
+  );
+}

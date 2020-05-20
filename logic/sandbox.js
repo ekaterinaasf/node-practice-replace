@@ -3,6 +3,7 @@ const fs = require("fs");
 const assert = require("assert");
 const util = require("util");
 const path = require("path");
+const replace = require("./index");
 
 const router = express.Router();
 
@@ -10,14 +11,7 @@ const readFilePromise = util.promisify(fs.readFile);
 const writeFilePromise = util.promisify(fs.writeFile);
 const readdirPromise = util.promisify(fs.readdir);
 
-const FILES_DIR = path.join(__dirname, "/../files");
-
-const sandbox = {
-  readDir: {},
-  writeFile: {},
-  replace: {},
-  readReport: {},
-};
+const FILES_DIR = path.join(__dirname, "/../", "files");
 
 // GET: '/files'
 // response: {status: 'ok', files: ['all.txt','file.txt','names.txt']}
@@ -25,7 +19,7 @@ router.get("/", async (req, res) => {
   try {
     let list = await readdirPromise(FILES_DIR);
     console.log(list);
-    res.send({ status: "ok", files: list });
+    res.json({ status: "ok", files: list });
   } catch (err) {
     console.log(err);
     res.status(500).end();
@@ -57,7 +51,19 @@ router.post("/add/:name", async (req, res) => {
 //  note - params should not include .txt, you should add that in the route logic
 // failure: {status: '404', message: `no file named ${oldFile}`  }
 // success: redirect -> GET: '/files'
-router.put("/replace/:oldFile/:newFile", (req, res) => {
+router.put("/replace/:oldFile/:newFile", async (req, res) => {
   try {
-  } catch (err) {}
+    const oldFile=req.params.oldFile + ".txt";
+    const newFile=req.params.newFile + '.txt';
+    const srcStr=req.body.toReplace;
+    const dstStr=req.body.withThis;
+
+    let text = await readFilePromise(path.join(FILES_DIR, oldFile),'utf-8');
+
+    await writeFilePromise(path.join(FILES_DIR, newFile), replace(text, srcStr, dstStr));
+    res.redirect(303, "/files");
+  } catch (err) {
+    console.log(err);
+    res.json({status: '404', message: `no file named ${oldFile}`);
+  }
 });

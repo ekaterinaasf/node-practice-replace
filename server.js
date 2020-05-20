@@ -53,7 +53,7 @@ app.use("/files", sandbox);
 app.get("/report", async (req, res) => {
   try {
     let report = await readFilePromise(REPORT_FILE, "utf-8");
-    res.send({ status: "ok", report });
+    res.json({ status: "ok", report });
   } catch (err) {
     console.log(err);
     res.status(500).end();
