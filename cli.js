@@ -32,9 +32,6 @@ const path = require("path");
 const util = require("util");
 const logic = require("./logic/index.js"); //use logic from here
 
-const readFilePromise = util.promisify(fs.readFile);
-const writeFilePromise = util.promisify(fs.writeFile);
-const readdirPromise = util.promisify(fs.readdir);
 const FILES_DIR = path.join(__dirname, "files");
 
 const DOC_STRING = `

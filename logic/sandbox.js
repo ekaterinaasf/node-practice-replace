@@ -1,9 +1,9 @@
 const replace = require("./index.js");
 const fs = require("fs");
+const express = require("express");
 const assert = require("assert");
 const util = require("util");
 const path = require("path");
-const replace = require("./index");
 
 const router = express.Router();
 
@@ -53,17 +53,20 @@ router.post("/add/:name", async (req, res) => {
 // success: redirect -> GET: '/files'
 router.put("/replace/:oldFile/:newFile", async (req, res) => {
   try {
-    const oldFile=req.params.oldFile + ".txt";
-    const newFile=req.params.newFile + '.txt';
-    const srcStr=req.body.toReplace;
-    const dstStr=req.body.withThis;
+    const oldFile = req.params.oldFile + ".txt";
+    const newFile = req.params.newFile + ".txt";
+    const srcStr = req.body.toReplace;
+    const dstStr = req.body.withThis;
 
-    let text = await readFilePromise(path.join(FILES_DIR, oldFile),'utf-8');
+    let text = await readFilePromise(path.join(FILES_DIR, oldFile), "utf-8");
 
-    await writeFilePromise(path.join(FILES_DIR, newFile), replace(text, srcStr, dstStr));
+    await writeFilePromise(
+      path.join(FILES_DIR, newFile),
+      replace(text, srcStr, dstStr)
+    );
     res.redirect(303, "/files");
   } catch (err) {
     console.log(err);
-    res.json({status: '404', message: `no file named ${oldFile}`);
+    res.json({ status: "404", message: `no file named ${oldFile}` });
   }
 });
